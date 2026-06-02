@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   ComposedChart, Area, Line, LineChart,
   XAxis, YAxis, Tooltip, ReferenceLine,
@@ -74,11 +74,23 @@ export default function GANDemo() {
   const [auto, setAuto] = useState(false);
   const iRef = useRef(null);
 
+  const doStep = useCallback(() => {
+    setS(prev => step(prev));
+  }, []);
+
   useEffect(() => {
-    if (auto) iRef.current = setInterval(() => setS(step), 160);
-    else clearInterval(iRef.current);
-    return () => clearInterval(iRef.current);
-  }, [auto]);
+    if (!auto) {
+      clearInterval(iRef.current);
+      iRef.current = null;
+      return;
+    }
+
+    iRef.current = window.setInterval(doStep, 160);
+    return () => {
+      clearInterval(iRef.current);
+      iRef.current = null;
+    };
+  }, [auto, doStep]);
 
   // Данные для графика распределений
   const xs = Array.from({ length: N_PLOT }, (_, i) =>
@@ -261,7 +273,7 @@ export default function GANDemo() {
 
       {/* ── Управление ── */}
       <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 10 }}>
-        <button onClick={() => setS(step)} disabled={auto}
+        <button onClick={doStep} disabled={auto}
           style={{ padding: "9px 20px", borderRadius: 6, border: "none",
                    background: auto ? "#21262d" : "#388bfd",
                    color: auto ? "#6e7681" : "#fff",
