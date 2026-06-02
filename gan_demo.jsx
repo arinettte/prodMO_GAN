@@ -145,7 +145,7 @@ export default function GANDemo() {
           <span style={{ color: "#3fb950" }}>╌ D(x) — дискриминатор (ось →)</span>
         </div>
         <ResponsiveContainer width="100%" height={200}>
-          <ComposedChart data={distData} margin={{ top: 4, right: 48, bottom: 0, left: 0 }}>
+          <ComposedChart data={distData} margin={{ top: 4, right: 48, bottom: 0, left: 0 }} isAnimationActive={false}>
             <XAxis dataKey="x" type="number" domain={[X_MIN, X_MAX]} tickCount={7}
                    tick={{ fontSize: 10, fill: "#6e7681" }} />
             <YAxis yAxisId="dens" domain={[0, 0.65]} width={36}
@@ -168,13 +168,16 @@ export default function GANDemo() {
               stroke="#3fb950" strokeDasharray="2 5" strokeOpacity={0.3} />
             <Area yAxisId="dens" type="monotone" dataKey="real"
                   stroke="#388bfd" fill="#388bfd" fillOpacity={0.22}
-                  strokeWidth={2} dot={false} name="p_data" />
+                  strokeWidth={2} dot={false} name="p_data"
+                  isAnimationActive={false} />
             <Area yAxisId="dens" type="monotone" dataKey="gen"
                   stroke="#f47067" fill="#f47067" fillOpacity={0.22}
-                  strokeWidth={2} dot={false} name="p_G" />
+                  strokeWidth={2} dot={false} name="p_G"
+                  isAnimationActive={false} />
             <Line yAxisId="disc" type="monotone" dataKey="disc"
                   stroke="#3fb950" strokeWidth={1.5} dot={false}
-                  strokeDasharray="6 3" name="D(x)" />
+                  strokeDasharray="6 3" name="D(x)"
+                  isAnimationActive={false} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
@@ -301,7 +304,7 @@ export default function GANDemo() {
             Функции потерь по шагам обучения
           </div>
           <ResponsiveContainer width="100%" height={130}>
-            <LineChart data={s.hist} margin={{ top: 4, right: 20, bottom: 0, left: 0 }}>
+            <LineChart data={s.hist} margin={{ top: 4, right: 20, bottom: 0, left: 0 }} isAnimationActive={false}>
               <XAxis dataKey="i" tick={{ fontSize: 10, fill: "#6e7681" }} />
               <YAxis tick={{ fontSize: 10, fill: "#6e7681" }} domain={["auto", "auto"]} width={36} />
               <CartesianGrid stroke="#21262d" strokeDasharray="3 3" />
@@ -310,9 +313,9 @@ export default function GANDemo() {
               />
               <Legend wrapperStyle={{ fontSize: 10, color: "#8b949e" }} />
               <Line type="monotone" dataKey="D" stroke="#3fb950" strokeWidth={1.5}
-                    dot={false} name="Loss D" />
+                    dot={false} name="Loss D" isAnimationActive={false} />
               <Line type="monotone" dataKey="G" stroke="#f47067" strokeWidth={1.5}
-                    dot={false} name="Loss G" />
+                    dot={false} name="Loss G" isAnimationActive={false} />
             </LineChart>
           </ResponsiveContainer>
         </div>
