@@ -19,6 +19,7 @@ const REAL_MU = 3.0, REAL_SIG = 0.8;
 const X_MIN = -4, X_MAX = 8;
 const N_PLOT = 180, N_SAMP = 100;
 const LR_D = 0.18, LR_G = 0.28;
+const AUTO_STEP_MS = 80;
 
 // ── Один шаг обучения (чистая функция, нет замыканий) ─────────
 function step(s) {
@@ -74,9 +75,18 @@ export default function GANDemo() {
   const [auto, setAuto] = useState(false);
   const iRef = useRef(null);
 
+  const advance = () => setS(prev => step(prev));
+
   useEffect(() => {
-    if (auto) iRef.current = setInterval(() => setS(step), 160);
-    else clearInterval(iRef.current);
+    if (!auto) {
+      clearInterval(iRef.current);
+      return;
+    }
+
+    iRef.current = window.setInterval(() => {
+      advance();
+    }, AUTO_STEP_MS);
+
     return () => clearInterval(iRef.current);
   }, [auto]);
 
@@ -261,7 +271,7 @@ export default function GANDemo() {
 
       {/* ── Управление ── */}
       <div style={{ display: "flex", gap: 8, justifyContent: "center", marginBottom: 10 }}>
-        <button onClick={() => setS(step)} disabled={auto}
+        <button onClick={advance} disabled={auto}
           style={{ padding: "9px 20px", borderRadius: 6, border: "none",
                    background: auto ? "#21262d" : "#388bfd",
                    color: auto ? "#6e7681" : "#fff",
