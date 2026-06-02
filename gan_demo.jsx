@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ComposedChart, Area, Line, LineChart,
   XAxis, YAxis, Tooltip, ReferenceLine,
@@ -93,14 +93,14 @@ export default function GANDemo() {
   }, [auto, doStep]);
 
   // Данные для графика распределений
-  const xs = Array.from({ length: N_PLOT }, (_, i) =>
-    X_MIN + (X_MAX - X_MIN) * i / (N_PLOT - 1));
-  const distData = xs.map(x => ({
+  const xs = useMemo(() => Array.from({ length: N_PLOT }, (_, i) =>
+    X_MIN + (X_MAX - X_MIN) * i / (N_PLOT - 1)), []);
+  const distData = useMemo(() => xs.map(x => ({
     x: +x.toFixed(2),
     real: +gaussian(x, REAL_MU, REAL_SIG).toFixed(4),
     gen:  +gaussian(x, s.gMu, s.gSig).toFixed(4),
     disc: +sigmoid(s.dW * x + s.dB).toFixed(4),
-  }));
+  })), [s.dB, s.dW, s.gMu, s.gSig, xs]);
 
   // Метрика перекрытия ∫ min(p_data, p_G) dx
   const overlap = xs.reduce((a, x) =>
@@ -145,7 +145,8 @@ export default function GANDemo() {
           <span style={{ color: "#3fb950" }}>╌ D(x) — дискриминатор (ось →)</span>
         </div>
         <ResponsiveContainer width="100%" height={200}>
-          <ComposedChart data={distData} margin={{ top: 4, right: 48, bottom: 0, left: 0 }} isAnimationActive={false}>
+          <ComposedChart data={distData} margin={{ top: 4, right: 48, bottom: 0, left: 0 }}
+                         isAnimationActive={false} animationDuration={0}>
             <XAxis dataKey="x" type="number" domain={[X_MIN, X_MAX]} tickCount={7}
                    tick={{ fontSize: 10, fill: "#6e7681" }} />
             <YAxis yAxisId="dens" domain={[0, 0.65]} width={36}
@@ -169,15 +170,15 @@ export default function GANDemo() {
             <Area yAxisId="dens" type="monotone" dataKey="real"
                   stroke="#388bfd" fill="#388bfd" fillOpacity={0.22}
                   strokeWidth={2} dot={false} name="p_data"
-                  isAnimationActive={false} />
+                  isAnimationActive={false} animationDuration={0} />
             <Area yAxisId="dens" type="monotone" dataKey="gen"
                   stroke="#f47067" fill="#f47067" fillOpacity={0.22}
                   strokeWidth={2} dot={false} name="p_G"
-                  isAnimationActive={false} />
+                  isAnimationActive={false} animationDuration={0} />
             <Line yAxisId="disc" type="monotone" dataKey="disc"
                   stroke="#3fb950" strokeWidth={1.5} dot={false}
                   strokeDasharray="6 3" name="D(x)"
-                  isAnimationActive={false} />
+                  isAnimationActive={false} animationDuration={0} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
@@ -304,7 +305,8 @@ export default function GANDemo() {
             Функции потерь по шагам обучения
           </div>
           <ResponsiveContainer width="100%" height={130}>
-            <LineChart data={s.hist} margin={{ top: 4, right: 20, bottom: 0, left: 0 }} isAnimationActive={false}>
+            <LineChart data={s.hist} margin={{ top: 4, right: 20, bottom: 0, left: 0 }}
+                       isAnimationActive={false} animationDuration={0}>
               <XAxis dataKey="i" tick={{ fontSize: 10, fill: "#6e7681" }} />
               <YAxis tick={{ fontSize: 10, fill: "#6e7681" }} domain={["auto", "auto"]} width={36} />
               <CartesianGrid stroke="#21262d" strokeDasharray="3 3" />
@@ -313,9 +315,9 @@ export default function GANDemo() {
               />
               <Legend wrapperStyle={{ fontSize: 10, color: "#8b949e" }} />
               <Line type="monotone" dataKey="D" stroke="#3fb950" strokeWidth={1.5}
-                    dot={false} name="Loss D" isAnimationActive={false} />
+                    dot={false} name="Loss D" isAnimationActive={false} animationDuration={0} />
               <Line type="monotone" dataKey="G" stroke="#f47067" strokeWidth={1.5}
-                    dot={false} name="Loss G" isAnimationActive={false} />
+                    dot={false} name="Loss G" isAnimationActive={false} animationDuration={0} />
             </LineChart>
           </ResponsiveContainer>
         </div>
